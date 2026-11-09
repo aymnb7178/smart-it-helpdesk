@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Ticket {{ t.id }}{% endblock %}
+{% block content %}
+<h1>#{{ t.id }} {{ t.title }}</h1>
+<div class="grid">
+  <div class="card"><div class="label">Status</div><div class="value" style="font-size:18px">{{ t.status }}</div></div>
+  <div class="card"><div class="label">Priority</div><div class="value" style="font-size:18px">{{ t.priority }}</div></div>
+  <div class="card"><div class="label">Category</div><div class="value" style="font-size:18px">{{ t.category }}</div></div>
+  <div class="card"><div class="label">SLA</div><div class="value" style="font-size:18px"><span class="pill {{ t.sla.overall }}">{{ t.sla.overall }}</span></div></div>
+</div>
+<div class="card"><pre>{{ t.description }}</pre>
+<p class="muted">Requester: {{ names.get(t.requester_id, "?") }} | Assignee: {{ names.get(t.assignee_id, "unassigned") }} | Created {{ t.created_at }} |
+First response due {{ t.sla.first_response_due }} ({{ t.sla.first_response }}) | Resolution due {{ t.sla.resolution_due }} ({{ t.sla.resolution }})</p>
+<p class="muted">Triage suggestion: {{ t.suggested_category }} / {{ t.suggested_priority }} (source: {{ t.suggestion_source }})</p></div>
+<h2>Comments</h2>
+<div class="table-wrap"><table>
+  {% for c in comments %}<tr><td>{{ names.get(c.author_id, "?") }}{% if c.internal %} <span class="pill">internal</span>{% endif %}<br><span class="muted">{{ c.created_at }}</span></td><td><pre>{{ c.body }}</pre></td></tr>
+  {% else %}<tr><td class="muted">No comments.</td></tr>{% endfor %}
+</table></div>
+<h2>Audit log</h2>
+<div class="table-wrap"><table>
+  <tr><th>When</th><th>Actor</th><th>Action</th><th>Field</th><th>Change</th></tr>
+  {% for a in audit %}<tr><td>{{ a.at }}</td><td>{{ names.get(a.actor_id, "?") }}</td><td>{{ a.action }}</td><td>{{ a.field or "" }}</td><td>{{ a.old_value or "" }}{% if a.new_value %} &rarr; {{ a.new_value }}{% endif %}</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

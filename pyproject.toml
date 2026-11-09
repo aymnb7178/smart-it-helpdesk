@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smart-it-helpdesk"
+version = "0.1.0"
+description = "IT helpdesk ticketing system with SLA tracking and ML ticket triage (Flask + sqlite3 + scikit-learn)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Aymen Al Erwi" }]
+dependencies = ["flask>=3.0", "pandas>=2.0", "numpy>=1.26", "scikit-learn>=1.4", "matplotlib>=3.8"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+include = ["helpdesk*"]
+
+[tool.setuptools.package-data]
+helpdesk = ["web/templates/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Operations dashboard</h1>
+<div class="grid">
+  <div class="card"><div class="label">Total tickets</div><div class="value">{{ summary.total_tickets }}</div></div>
+  <div class="card"><div class="label">Active</div><div class="value">{{ summary.active_tickets }}</div></div>
+  <div class="card"><div class="label">SLA compliance</div><div class="value">{{ summary.sla_compliance_pct if summary.sla_compliance_pct is not none else "n/a" }}{% if summary.sla_compliance_pct is not none %}%{% endif %}</div></div>
+  <div class="card"><div class="label">Active SLA breaches</div><div class="value">{{ summary.active_breaches }}</div></div>
+  <div class="card"><div class="label">Mean first response</div><div class="value">{{ summary.mean_first_response_minutes if summary.mean_first_response_minutes is not none else "n/a" }}<span class="muted" style="font-size:13px"> min</span></div></div>
+  <div class="card"><div class="label">Mean resolution</div><div class="value">{{ ((summary.mean_resolution_minutes or 0) / 60) | round(1) }}<span class="muted" style="font-size:13px"> h</span></div></div>
+</div>
+<div class="charts">
+  {% for name, alt in [("volume","Weekly ticket volume"),("sla_by_priority","SLA compliance by priority"),("by_category","Tickets by category"),("resolution_by_category","Mean resolution time by category")] %}
+  <img src="{{ url_for('dashboard.chart', name=name) }}" alt="{{ alt }}">
+  {% endfor %}
+</div>
+<h2>Active SLA breaches (top 10 by overdue time)</h2>
+<div class="table-wrap"><table>
+  <tr><th>#</th><th>Title</th><th>Priority</th><th>Status</th><th>Breached stage</th><th>Overdue</th><th>Assignee</th></tr>
+  {% for b in breaches %}
+  <tr>
+    <td><a href="{{ url_for('dashboard.ticket', ticket_id=b.id) }}">{{ b.id }}</a></td>
+    <td>{{ b.title }}</td><td><span class="pill {{ b.priority }}">{{ b.priority }}</span></td>
+    <td>{{ b.status }}</td><td>{{ b.stage | replace("_", " ") }}</td>
+    <td>{{ (b.overdue_minutes / 60) | round(1) }} h</td>
+    <td>{{ names.get(b.assignee_id, "unassigned") }}</td>
+  </tr>
+  {% else %}<tr><td colspan="7" class="muted">No active breaches.</td></tr>{% endfor %}
+</table></div>
+<h2>By category</h2>
+<div class="table-wrap"><table>
+  <tr><th>Category</th><th>Tickets</th><th>Mean first response (min)</th><th>Mean resolution (h)</th><th>SLA compliance</th></tr>
+  {% for c in summary.by_category %}
+  <tr><td>{{ c.category }}</td><td>{{ c.tickets }}</td><td>{{ c.mean_first_response_minutes if c.mean_first_response_minutes is not none else "n/a" }}</td>
+  <td>{{ ((c.mean_resolution_minutes / 60) | round(1)) if c.mean_resolution_minutes is not none else "n/a" }}</td>
+  <td>{{ (c.sla_compliance_pct ~ "%") if c.sla_compliance_pct is not none else "n/a" }}</td></tr>
+  {% endfor %}
+</table></div>
+<p class="notice">Figures are computed from the tickets currently in the database. In the bundled demo they are SYNTHETIC.</p>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Queue{% endblock %}
+{% block content %}
+<h1>Ticket queue</h1>
+<form class="filters" method="get">
+  <select name="status"><option value="">Any status</option>{% for s in statuses %}<option value="{{ s }}" {{ "selected" if filters.status == s }}>{{ s }}</option>{% endfor %}</select>
+  <select name="category"><option value="">Any category</option>{% for s in categories %}<option value="{{ s }}" {{ "selected" if filters.category == s }}>{{ s }}</option>{% endfor %}</select>
+  <select name="priority"><option value="">Any priority</option>{% for s in priorities %}<option value="{{ s }}" {{ "selected" if filters.priority == s }}>{{ s }}</option>{% endfor %}</select>
+  <button type="submit">Filter</button>
+</form>
+<div class="table-wrap"><table>
+  <tr><th>#</th><th>Title</th><th>Category</th><th>Priority</th><th>Status</th><th>SLA</th><th>Assignee</th><th>Created</th></tr>
+  {% for t in items %}
+  <tr>
+    <td><a href="{{ url_for('dashboard.ticket', ticket_id=t.id) }}">{{ t.id }}</a></td>
+    <td>{{ t.title }}</td><td>{{ t.category }}</td>
+    <td><span class="pill {{ t.priority }}">{{ t.priority }}</span></td><td>{{ t.status }}</td>
+    <td><span class="pill {{ t.sla.overall }}">{{ t.sla.overall }}</span></td>
+    <td>{{ names.get(t.assignee_id, "unassigned") }}</td><td>{{ t.created_at[:16] | replace("T", " ") }}</td>
+  </tr>
+  {% else %}<tr><td colspan="8" class="muted">No tickets match.</td></tr>{% endfor %}
+</table></div>
+<p class="notice">Showing up to 100 newest tickets.</p>
+{% endblock %}
