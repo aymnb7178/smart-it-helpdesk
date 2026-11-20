@@ -154,10 +154,6 @@ Covers password hashing and token tampering/expiry, the permission matrix, every
 - Alembic-style migrations and a PostgreSQL option
 - Port the API layer to FastAPI with OpenAPI docs
 
-## Built with AI assistance
-
-This project was built with the help of an AI assistant (Claude). I directed the scope and reviewed the result; the code, tests, documentation and charts were produced with AI help, and every number above comes from running the code in this repository (`python -m pytest -q`, `python scripts/demo.py`, `python -m helpdesk evaluate`).
-
 ## License
 
 MIT, see [LICENSE](LICENSE). Author: Aymen Al Erwi ([aymnb7178](https://github.com/aymnb7178)).
